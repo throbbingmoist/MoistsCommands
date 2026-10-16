@@ -1,0 +1,21 @@
+{
+	"modListVersion": 2,
+	"modList": [{
+		"modid": "${modId}",
+		"name": "${modName}",
+		"description": "Adds a handful of basic commands (/home, /sethome, /spawn, /back) frequently found on servers. Comes with some configuration.",
+		"version": "${modVersion}",
+		"mcversion": "${minecraftVersion}",
+		"url": "https://github.com/throbbingmoist/MoistsCommands",
+		"updateUrl": "",
+		"authorList": ["throbbingMoist"],
+		"credits": "The GTNH team for their easy-to-use mod template.",
+		"logoFile": "icon.png",
+		"screenshots": [],
+		"parent": "",
+		"requiredMods": [],
+		"dependencies": [],
+		"dependants": [],
+		"useDependencyInformation": false
+	}]
+}
