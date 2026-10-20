@@ -19,6 +19,7 @@ public class ConfigGUI extends GuiConfig {
             false,
             false,
             GuiConfig.getAbridgedConfigPath(Config.configuration.toString()));
+        this.configElements.add(new ConfigElement<>(Config.configuration.getCategory("cooldowns")));
         this.configElements.add(new ConfigElement<>(Config.configuration.getCategory("save_data")));
     }
 

@@ -8,34 +8,33 @@ import com.moist.moistscommands.config.Config;
 
 public class Teleport {
 
-    public static void tpWithBack(EntityPlayerMP player, Location location) {
+    public static void tpWithBack(EntityPlayerMP player, Location location, Integer delay) {
         PlayerLocation.updateLastLocation(player);
         int targetDim = location.dimension;
         if (player.dimension != targetDim) {
             player.travelToDimension(targetDim);
         }
-
-        if (Config.secondsDelay.equals(0)) {
+        if (delay.equals(0)) {
             player.playerNetServerHandler
                 .setPlayerLocation(location.posX, location.posY, location.posZ, location.yaw, location.pitch);
         } else {
-            DelayedEventHelper.INSTANCE.scheduleEvent(() -> {
+            DelayedEventHelper.scheduleEvent(() -> {
                 if (player.playerNetServerHandler != null && !player.isDead) {
                     player.playerNetServerHandler
                         .setPlayerLocation(location.posX, location.posY, location.posZ, location.yaw, location.pitch);
                 }
-            }, (int) (player.worldObj.getTotalWorldTime() + (Config.secondsDelay * 20)));
+            }, (int) (player.worldObj.getTotalWorldTime() + delay));
         }
     }
 
-    public static void tpWithBack(EntityPlayerMP player, Location location, StringBuilder builder) {
+    public static void tpWithBack(EntityPlayerMP player, Location location, Integer delay, StringBuilder builder) {
         PlayerLocation.updateLastLocation(player);
         int targetDim = location.dimension;
         if (player.dimension != targetDim) {
             player.travelToDimension(targetDim);
         }
 
-        if (Config.secondsDelay.equals(0)) {
+        if (delay.equals(0)) {
             builder.append(".");
             player.addChatMessage(new ChatComponentText(builder.toString()));
             player.playerNetServerHandler
@@ -45,12 +44,12 @@ public class Teleport {
                 .append(Config.secondsDelay)
                 .append(" seconds.");
             player.addChatMessage(new ChatComponentText(builder.toString()));
-            DelayedEventHelper.INSTANCE.scheduleEvent(() -> {
+            DelayedEventHelper.scheduleEvent(() -> {
                 if (player.playerNetServerHandler != null && !player.isDead) {
                     player.playerNetServerHandler
                         .setPlayerLocation(location.posX, location.posY, location.posZ, location.yaw, location.pitch);
                 }
-            }, (int) (player.worldObj.getTotalWorldTime() + (Config.secondsDelay * 20)));
+            }, (int) (player.worldObj.getTotalWorldTime() + delay));
         }
     }
 

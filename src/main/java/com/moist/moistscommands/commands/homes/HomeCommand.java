@@ -12,9 +12,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StringUtils;
+import net.minecraft.world.World;
 
 import com.moist.moistscommands.MoistsCommands;
 import com.moist.moistscommands.config.Config;
+import com.moist.moistscommands.helper.DelayedEventHelper;
 import com.moist.moistscommands.helper.Location;
 import com.moist.moistscommands.helper.PlayerLocation;
 import com.moist.moistscommands.helper.Teleport;
@@ -43,9 +46,10 @@ public class HomeCommand extends CommandBase {
         }
         try {
             EntityPlayerMP player = getCommandSenderAsPlayer(sender);
+            World world = player.worldObj;
+            StringBuilder chatString = new StringBuilder();
             if (homeName.equals("list")) {
                 HashMap<String, Location> playerHomes = PlayerLocation.listPlayerHomes(player);
-                StringBuilder chatString = new StringBuilder();
                 if (playerHomes == null || playerHomes.isEmpty()) {
                     chatString // if you have no homes for whatever reason, you cant list them.
                         .append(EnumChatFormatting.RED)
@@ -88,7 +92,6 @@ public class HomeCommand extends CommandBase {
                 sender.addChatMessage(new ChatComponentText(chatString.toString()));
             } else {
                 Location home = PlayerLocation.getHome(player, homeName);
-                StringBuilder chatString = new StringBuilder();
                 if (home == null) {
                     chatString.append(EnumChatFormatting.RED)
                         .append("Could not find home '")
@@ -99,12 +102,30 @@ public class HomeCommand extends CommandBase {
                     player.addChatMessage(new ChatComponentText(chatString.toString()));
                     return;
                 }
+                if (Config.homeCooldown > 0
+                    && DelayedEventHelper.checkCommandCooldown(player, getCommandName(), world.getTotalWorldTime())) {
+                    chatString.append(EnumChatFormatting.RED)
+                        .append("/")
+                        .append(this.getCommandName())
+                        .append(" is on cooldown! (")
+                        .append(
+                            StringUtils.ticksToElapsedTime(
+                                Math.toIntExact(DelayedEventHelper.commandCooldownTime(player, getCommandName()))))
+                        .append(")");
+                    player.addChatMessage(new ChatComponentText(chatString.toString()));
+                    return;
+                } else {
+                    if (Config.homeCooldown > 0) DelayedEventHelper.addCommandCooldown(
+                        player,
+                        getCommandName(),
+                        world.getTotalWorldTime() + (Config.homeCooldown * 20L));
+                }
                 chatString.append("Teleporting to '")
                     .append(EnumChatFormatting.GOLD)
                     .append(homeName)
                     .append(EnumChatFormatting.RESET)
                     .append("'");
-                Teleport.tpWithBack(player, home, chatString);
+                Teleport.tpWithBack(player, home, (Config.secondsDelay * 20), chatString);
             }
         } catch (Exception e) {
             MoistsCommands.LOG.catching(e);
